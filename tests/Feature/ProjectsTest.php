@@ -10,16 +10,21 @@ class ProjectsTest extends TestCase
 {
     use WithFaker,RefreshDatabase;
     /** @test */
-    public function validateAuthUser()
+    public function guestCannotManageProject()
     {
-        $attributes=factory('App\Project')->raw();
-        $this->post('/projects', $attributes)->assertRedirect('/login');
+        $project=factory('App\Project')->create();
+
+        $this->get('/projects')->assertRedirect('/login');
+        $this->get('/projects/create')->assertRedirect('/login');
+        $this->post('/projects', $project->toArray())->assertRedirect('/login');
+        $this->get($project->path())->assertRedirect('/login');
     }
     /** @test */
     public function CreateProject()
     {
         $this->withoutExceptionHandling();
         $this->actingAs(factory('App\User')->create());
+        $this->get('/projects/create')->assertStatus(200);
         $attributes=[
             'tittle'=>$this->faker->sentence,
             'description'=>$this->faker->paragraph
@@ -44,10 +49,24 @@ class ProjectsTest extends TestCase
     }
     
     /** @test */
-    public function canViewAProject()
+    public function canViewTheirProject()
     {
+        $this->actingAs(factory('App\User')->create());
         $this->withoutExceptionHandling();
-        $project=factory('App\Project')->create();
+        $project=factory('App\Project')->create(['user_id'=> auth()->id()]);
         $this->get($project->path())->assertSee($project->tittle)->assertSee($project->description);
+    }
+    /** @test */
+    public function cannotViewOtherPeopleProject()
+    {
+        $this->actingAs(factory('App\User')->create());
+        $project=factory('App\Project')->create();
+        $this->get($project->path())->assertStatus(403);
+    }
+    /** @test */
+    public function belongsToAUser()
+    {
+        $project=factory('App\Project')->create();
+        $this->assertInstanceOf('App\User', $project->user);
     }
 }
