@@ -48,6 +48,9 @@
       box-shadow: 0 2px 7px 0 #b0eaff; 
 
   }
+  .card{
+        @apply .bg-white .rounded-lg .p-5 .shadow;
+  }
  
  /**
   * This injects all of Tailwind's utility classes, generated based on your
