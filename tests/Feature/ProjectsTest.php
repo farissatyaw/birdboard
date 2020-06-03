@@ -67,8 +67,15 @@ class ProjectsTest extends TestCase
     public function canUpdateTheirProject()
     {
         $project=ProjectFactory::create();
-        $this->actingAs($project->user)->patch($project->path(), ['notes'=>'Changed']);
-        $this->assertDatabaseHas('projects', ['notes'=>'Changed']);
+        $this->actingAs($project->user)->patch(
+            $project->path(),
+            $attributes= [
+            'tittle'=>'Changed',
+            'description' => 'Changed',
+            'notes'=>'Changed'
+            ]
+        );
+        $this->assertDatabaseHas('projects', $attributes);
     }
     /** @test */
     public function cannotViewOtherPeopleProject()
