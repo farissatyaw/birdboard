@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Project;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Facades\Tests\Setup\ProjectFactory;
 
 class ProjectsTest extends TestCase
 {
@@ -22,16 +24,20 @@ class ProjectsTest extends TestCase
     /** @test */
     public function CreateProject()
     {
-        $this->withoutExceptionHandling();
-        $this->actingAs(factory('App\User')->create());
+        $this->signIn();
         $this->get('/projects/create')->assertStatus(200);
         $attributes=[
             'tittle'=>$this->faker->sentence,
-            'description'=>$this->faker->paragraph
+            'description'=>$this->faker->paragraph,
+            'notes'=>'General notes here.'
         ];
-        $this->post('/projects', $attributes)->assertRedirect('/projects');
+        $this->post('/projects', $attributes);
+        $project=Project::where($attributes)->first();
         $this->assertDatabaseHas('projects', $attributes);
-        $this->get('/projects')->assertSee($attributes['tittle']);
+        $this->get($project->path())
+            ->assertSee($attributes['tittle'])
+            ->assertSee(\Illuminate\Support\Str::limit($project->description, 100))
+            ->assertSee($attributes['notes']);
     }
     /** @test */
     public function validateTittle()
@@ -51,10 +57,18 @@ class ProjectsTest extends TestCase
     /** @test */
     public function canViewTheirProject()
     {
-        $this->actingAs(factory('App\User')->create());
-        $this->withoutExceptionHandling();
-        $project=factory('App\Project')->create(['user_id'=> auth()->id()]);
-        $this->get($project->path())->assertSee($project->tittle)->assertSee($project->description);
+        $project=ProjectFactory::create();
+        $this->be($project->owner)
+            ->get($project->path())
+            ->assertSee($project->tittle)
+            ->assertSee(\Illuminate\Support\Str::limit($project->description, 100));
+    }
+    /** @test */
+    public function canUpdateTheirProject()
+    {
+        $project=ProjectFactory::create();
+        $this->actingAs($project->user)->patch($project->path(), ['notes'=>'Changed']);
+        $this->assertDatabaseHas('projects', ['notes'=>'Changed']);
     }
     /** @test */
     public function cannotViewOtherPeopleProject()
@@ -62,6 +76,15 @@ class ProjectsTest extends TestCase
         $this->actingAs(factory('App\User')->create());
         $project=factory('App\Project')->create();
         $this->get($project->path())->assertStatus(403);
+    }
+    /** @test */
+    public function cannotUpdateOtherPeopleProject()
+    {
+        $this->signIn();
+        $project=factory('App\Project')->create();
+        $this->patch($project->path(), [
+            'notes'=>'Changed'
+        ])->assertStatus(403);
     }
     /** @test */
     public function belongsToAUser()

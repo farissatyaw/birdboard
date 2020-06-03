@@ -14,18 +14,35 @@
     <div class="lg:flex -mx-3">
         <div class="lg:w-3/4 px-3 mb-8">
             <div class="mb-6">
-                <h2 class="text-grey-dark font-normal text-lg mb-3">Tasks</h2>  
-                <div class="card mb-3">Lorem Ipsum.</div>
-                <div class="card mb-3">Lorem Ipsum.</div>
-                <div class="card mb-3">Lorem Ipsum.</div>
-                
+                <h2 class="text-grey-dark font-normal text-lg mb-3">Tasks</h2>
+                @foreach($project->tasks as $task)
+                <div class="card mb-3">
+                    <form method="POST" action="{{$task->path()}}">
+                        @csrf
+                        <div class="flex items-center">
+                        <input name="body" value="{{$task->body }}" class="w-full {{$task->completed ? 'text-grey' : ''}}">
+                        <input name="completed" type="checkbox" onchange="this.form.submit()" {{$task->completed ? 'checked' : ''}}>
+                        </div>
+                    </form>
+                </div>
+                @endforeach
+                <div class="card mb-3">
+                    <form method="POST" action="{{$project->path() . '/tasks'}}">
+                        @csrf
+                        <input placeholder="Add Taks.." class="w-full" name="body"></div>
+                    </form>   
             </div>
             
             <div class="mb-6">
                 <h2 class="text-grey-dark font-normal text-lg">General Notes</h2>  
             </div>
+            <form method="POST" action="{{$project->path()}}">
+                @csrf
+                @method('PATCH')
 
-            <textarea class="card w-full" style="min-height:200px">Lorem Ipsum.</textarea>
+                <textarea name="notes" class="card w-full mb-3" style="min-height:200px" placeholder="Leave your notes here">{{$project->notes}}</textarea>
+                <button type="submit" class="button">Save</button>
+            </form>
         </div>
         <div class="lg:w-1/4 px-3">
                 @include('projects.card')

@@ -15,4 +15,12 @@ class ProjectsTest extends TestCase
         $project->path();
         $this->assertEquals('/projects/'.$project->id, $project->path());
     }
+    /** @test */
+    public function itCanAddTask()
+    {
+        $project= factory('App\Project')->create();
+        $task= $project->addTask('Test Task');
+        $this->assertCount(1, $project->tasks);
+        $this->assertTrue($project->tasks->contains($task));
+    }
 }
