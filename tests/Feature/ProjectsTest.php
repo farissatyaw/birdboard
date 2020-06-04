@@ -23,6 +23,13 @@ class ProjectsTest extends TestCase
         // $this->get($project->path())->assertRedirect('/login');
     }
     /** @test */
+    public function unAuthCannotDelete()
+    {
+        $project=ProjectFactory::create();
+        $this->signIn();
+        $this->delete($project->path())->assertStatus(403);
+    }
+    /** @test */
     public function CreateProject()
     {
         $this->signIn();
@@ -39,6 +46,14 @@ class ProjectsTest extends TestCase
             ->assertSee($attributes['tittle'])
             ->assertSee(\Illuminate\Support\Str::limit($project->description, 100))
             ->assertSee($attributes['notes']);
+    }
+    /** @test */
+    public function DeleteProject()
+    {
+        $this->withoutExceptionHandling();
+        $project=ProjectFactory::create();
+        $this->actingAs($project->user)->delete($project->path());
+        $this->assertDatabaseMissing('projects', $project->only('id'));
     }
     /** @test */
     public function validateTittle()
