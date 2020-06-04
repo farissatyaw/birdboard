@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use Facades\Tests\Setup\ProjectFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,5 +20,12 @@ class TaskTest extends TestCase
     {
         $task=factory('App\Task')->create();
         $this->assertInstanceOf('App\Project', $task->project);
+    }
+    /** @test */
+    public function completeStatusTrue()
+    {
+        $task=factory('App\Task')->create();
+        $task->complete();
+        $this->assertTrue($task->fresh()->completed);
     }
 }

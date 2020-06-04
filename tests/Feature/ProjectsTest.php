@@ -14,12 +14,13 @@ class ProjectsTest extends TestCase
     /** @test */
     public function guestCannotManageProject()
     {
+        $this->withoutExceptionHandling();
         $project=factory('App\Project')->create();
 
-        $this->get('/projects')->assertRedirect('/login');
-        $this->get('/projects/create')->assertRedirect('/login');
-        $this->post('/projects', $project->toArray())->assertRedirect('/login');
-        $this->get($project->path())->assertRedirect('/login');
+        $this->assertGuest();
+        // $this->get('/projects/create')->assertRedirect('/login');
+        // $this->post('/projects', $project->toArray())->assertRedirect('/login');
+        // $this->get($project->path())->assertRedirect('/login');
     }
     /** @test */
     public function CreateProject()
@@ -58,7 +59,7 @@ class ProjectsTest extends TestCase
     public function canViewTheirProject()
     {
         $project=ProjectFactory::create();
-        $this->be($project->owner)
+        $this->actingAs($project->user)
             ->get($project->path())
             ->assertSee($project->tittle)
             ->assertSee(\Illuminate\Support\Str::limit($project->description, 100));
@@ -72,6 +73,18 @@ class ProjectsTest extends TestCase
             $attributes= [
             'tittle'=>'Changed',
             'description' => 'Changed',
+            'notes'=>'Changed'
+            ]
+        );
+        $this->assertDatabaseHas('projects', $attributes);
+    }
+    /** @test */
+    public function canUpdateTheirGeneralNotes()
+    {
+        $project=ProjectFactory::create();
+        $this->actingAs($project->user)->patch(
+            $project->path(),
+            $attributes= [
             'notes'=>'Changed'
             ]
         );

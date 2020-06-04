@@ -41,14 +41,40 @@ class ProjectTaskTest extends TestCase
     {
         $project=ProjectFactory::withTasks(2)->create();
         $this->be($project->user)
+            ->post($project->tasks->first()->path(), ['body' => 'Changed']);
+        $this->assertDatabaseHas('tasks', ['body'=> 'Changed',]);
+    }
+    /** @test */
+    public function canCompleteTask()
+    {
+        $project=ProjectFactory::withTasks(1)->create();
+        $this->be($project->user)
             ->post($project->tasks->first()->path(), [
             'body' => 'Changed',
             'completed' => true
         ]);
-        
         $this->assertDatabaseHas('tasks', [
             'body'=> 'Changed',
             'completed' => true
+        ]);
+    }
+    /** @test */
+    public function caninCompleteTask()
+    {
+        $project=ProjectFactory::withTasks(1)->create();
+        $this->be($project->user)
+            ->post($project->tasks->first()->path(), [
+            'body' => 'Changed',
+            'completed' => true
+        ]);
+        $this->be($project->user)
+            ->post($project->tasks->first()->path(), [
+            'body' => 'Changed',
+            'completed' => false
+        ]);
+        $this->assertDatabaseHas('tasks', [
+            'body'=> 'Changed',
+            'completed' => false
         ]);
     }
     /** @test */

@@ -19,9 +19,11 @@ class ProjectFactory
         $project = factory('App\Project')->create([
             'user_id'=>$this->user ?? factory('App\User')
         ]);
-        factory('App\Task', $this->tasksCount)->create([
+        if (!$this->tasksCount==0) {
+            factory('App\Task', $this->tasksCount)->create([
             'project_id'=>$project->id
         ]);
+        }
         return $project;
     }
     public function ownedBy($user)

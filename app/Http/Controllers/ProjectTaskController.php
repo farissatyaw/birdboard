@@ -23,10 +23,12 @@ class ProjectTaskController extends Controller
         request()->validate([
             'body'=>'required'
         ]);
-        $task->update([
-            'body' => request('body'),
-            'completed' => request()->has('completed') ? 1 : 0
-        ]);
+        $task->update(['body' => request('body'),]);
+        if (request('completed')) {
+            $task->complete();
+        } else {
+            $task->incomplete();
+        }
         
 
 
