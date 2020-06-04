@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProjectsController;
 use App\Project;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -19,12 +20,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::group(['middleware'=>'auth'], function () {
-    Route::get('/projects', 'ProjectsController@index');
-    Route::get('/projects/create', 'ProjectsController@create');
-    Route::get('/projects/{project}', 'ProjectsController@show');
-    Route::get('/projects/{project}/edit', 'ProjectsController@edit');
-    Route::patch('/projects/{project}', 'ProjectsController@update');
-    Route::post('/projects', 'ProjectsController@store');
+    // Route::get('/projects', 'ProjectsController@index');
+    // Route::get('/projects/create', 'ProjectsController@create');
+    // Route::get('/projects/{project}', 'ProjectsController@show');
+    // Route::get('/projects/{project}/edit', 'ProjectsController@edit');
+    // Route::patch('/projects/{project}', 'ProjectsController@update');
+    // Route::delete('/projects/{project}', 'ProjectsController@destroy');
+    // Route::post('/projects', 'ProjectsController@store');
+    // WTF yang diatas bisa diganti ama ini doang
+    Route::resource('projects', 'ProjectsController');
+
+
     Route::post('/projects/{project}/tasks', 'ProjectTaskController@store');
     Route::post('/projects/{project}/tasks/{task}', 'ProjectTaskController@update');
 });

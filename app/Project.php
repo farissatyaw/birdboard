@@ -6,18 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
+    use RecordsActivity;
+    
     protected $guarded=[];
 
-    protected static function boot()
-    {
-        parent::boot();
-        static::created(function ($project) {
-            $project->recordActivity('created_project');
-        });
-        static::updated(function ($project) {
-            $project->recordActivity('updated_project');
-        });
-    }
+    // protected static function boot()
+    // {
+    //     parent::boot();
+    //     static::created(function ($project) {
+    //         $project->recordActivity('created_project');
+    //     });
+    //     static::updated(function ($project) {
+    //         $project->recordActivity('updated_project');
+    //     });
+    // }
     // Bisa di web.php, bisa buat observer, ato bisa buat trait baru.
 
 
@@ -40,9 +42,5 @@ class Project extends Model
     public function activity()
     {
         return $this->hasMany(Activity::class)->latest();
-    }
-    public function recordActivity($description)
-    {
-        $this->activity()->create(compact('description'));
     }
 }
