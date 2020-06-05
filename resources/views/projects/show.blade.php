@@ -4,16 +4,30 @@
 <header class="flex items-center mb-3 py-4">
     <div class="flex w-full justify-between items-ends">
         <p class="text-sm text-grey-dark font-normal">
-           <a href="/projects" class="text-sm text-grey-dark font-normal no-underline"> My Projects </a> / {{$project->tittle}}
+           <a href="/projects" class="text-sm text-grey-dark font-normal no-underline"> My Projects </a>
+            / {{$project->tittle}}
         </p>
-        <a href="{{$project->path() . '/edit'}}" class="button">Edit Project</a>
+        <div class="flex items-center">
+            @foreach($project->members as $member)
+                <img src="{{gravatar_url($member->email)}}" 
+                alt="{{$member-> name}}'s avatar" 
+                class="rounded-full w-8 mr-2">
+            @endforeach
+
+                <img src="{{gravatar_url($project->user->email)}}" 
+                alt="{{$project->user->name}}'s avatar" 
+                class="rounded-full w-8 mr-2">
+
+            <a href="{{$project->path() . '/edit'}}" class="button ml-6">Edit Project</a>
+        </div>
+        
     </div>
 </header>
 
 <main class='container'>
     <div class="lg:flex -mx-3">
-        <div class="lg:w-3/4 px-3 mb-8">
-            <div class="mb-6">
+        <div class="lg:w-3/4 px-3 mb-6">
+            <div class="mb-8">
                 <h2 class="text-grey-dark font-normal text-lg mb-3">Tasks</h2>
                 @foreach($project->tasks as $task)
                 <div class="card mb-3">
@@ -43,22 +57,24 @@
                 <textarea name="notes" class="card w-full mb-3" style="min-height:200px" placeholder="Leave your notes here">{{$project->notes}}</textarea>
                 <button type="submit" class="button">Save</button>
             </form>
-        </div>
-        <div class="lg:w-1/4 px-3">
-                @include('projects.card')
-            <div class="card mt-3">
-            <ul>
-                @foreach($project->activity as $activity)
-                    <li class="list-reset {{$loop->last ? '' : 'mb-1'}}">
-                    <div class="text-sm">{{$activity->user->name}} {{str_replace("_"," a ",$activity->description)}}
-                        {{$activity->subject->body}}<div>
-                    <div class="text-xs text-grey">{{$activity->created_at->diffForHumans()}}</div>
-                    </li>
-                @endforeach
-            </ul>
+            @if($errors->any())
+                <div class="field mt-6">
+            @foreach($errors->all() as $error)
+            <li class="text-red">{{$error}}</li>
+            @endforeach
             </div>
+    @endif  
         </div>
-        
+        <div class="lg:w-1/4 px-3 lg:py-8">
+                @include('projects.card')
+            <div class="card mt-3 mb-3">
+                @include('projects.activitycard')
+            </div>
+            @can('manage', $project)
+                @include('projects.invitecard')
+            @endcan
+        </div>        
     </div>
-</main> 
+</main>
+
 @endsection

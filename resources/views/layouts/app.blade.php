@@ -23,53 +23,49 @@
     <div id="app">
         <nav class="bg-white">
             <div class="container mx-auto">
-                <div class="flex justify-between items-center py-2">
+                <div class="flex justify-between items-center py-1">
                 <h1>
                     <a class="navbar-brand" href="{{ url('/') }}">
                     <img src="/images/logo.svg" alt="Birdboard">
                     </a>
                 </h1>   
 
-                    <div>
-
+                <div>
                         <!-- Right Side Of Navbar -->
-                        <ul class="navbar-nav ml-auto">
+                        <div class="flex items-center ml-auto">
                             <!-- Authentication Links -->
                             @guest
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
+                                <a class="text-accent mr-4 no-underline hover:underline" href="{{ route('login') }}">{{ __('Login') }}</a>
+
                                 @if (Route::has('register'))
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                    </li>
+                                    <a class="text-accent no-underline hover:underline" href="{{ route('register') }}">{{ __('Register') }}</a>
                                 @endif
                             @else
-                                <li class="nav-item dropdown">
-                                    <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                        {{ Auth::user()->name }} <span class="caret"></span>
-                                    </a>
+                                
 
-                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                        <a class="dropdown-item" href="{{ route('logout') }}"
-                                        onclick="event.preventDefault();
-                                                        document.getElementById('logout-form').submit();">
-                                            {{ __('Logout') }}
-                                        </a>
+                                <dropdown align="right" width="200px">
+                                    <div class="flex items-center">
+                                        
+                                            <img width="35"
+                                                 class="rounded-full mr-3"
+                                                 src="{{ gravatar_url(auth()->user()->email) }}">
 
-                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                            <div class="text-lg ml-3">{{ auth()->user()->name }}</div>
+                                        </button>
+                                        <form id="logout-form" method="POST" action="/logout" class="ml-10">
                                             @csrf
+                                            <button type="submit" class="dropdown-menu-link w-full text-left">Logout</button>
                                         </form>
-                                    </div>
-                                </li>
+                                        </div> 
+                                </dropdown>
                             @endguest
-                        </ul>
+                        </div>
                     </div>
-            </div>
+                </div>
             </div>
         </nav>
 
-        <main class="container mx-auto py-4 ">
+        <main class="container mx-auto py-6">
             @yield('content')
         </main>
     </div>

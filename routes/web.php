@@ -33,6 +33,8 @@ Route::group(['middleware'=>'auth'], function () {
 
     Route::post('/projects/{project}/tasks', 'ProjectTaskController@store');
     Route::post('/projects/{project}/tasks/{task}', 'ProjectTaskController@update');
+
+    Route::post('/projects/{project}/invite', 'ProjectInvitationController@store');
 });
 
 Auth::routes();

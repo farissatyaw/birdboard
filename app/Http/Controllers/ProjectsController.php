@@ -10,7 +10,7 @@ class ProjectsController extends Controller
 {
     public function index()
     {
-        $projects=auth()->user()->projects;
+        $projects=auth()->user()->allProjects();
         return view('projects.index', compact('projects'));
     }
     public function store()
@@ -48,7 +48,7 @@ class ProjectsController extends Controller
     }
     public function destroy(Project $project)
     {
-        $this->authorize('update', $project);
+        $this->authorize('manage', $project);
         $project->delete();
         return redirect('/projects');
     }

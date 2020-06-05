@@ -54,7 +54,7 @@ class ActivityFeedTest extends TestCase
         $this->assertCount(3, $project->activity);
         tap($project->activity->last(), function ($activity) {
             //dd($activity);
-            $this->assertEquals('completed', $activity->description);
+            $this->assertEquals('completed ', $activity->description);
             $this->assertInstanceOf(Task::class, $activity->subject);
         });
     }
@@ -76,6 +76,6 @@ class ActivityFeedTest extends TestCase
         ]);
         $this->assertCount(4, $project->activity);
         //dd($project->activity);
-        $this->assertEquals('uncompleted', $project->activity->last()->description);
+        $this->assertEquals('uncompleted ', $project->activity->last()->description);
     }
 }

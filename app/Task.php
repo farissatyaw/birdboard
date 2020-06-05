@@ -35,7 +35,7 @@ class Task extends Model
     public function complete($status=null)
     {
         $this->update(['completed'=>isset($status) ? false : true]);
-        $this->recordActivity(isset($status) ? "uncompleted":"completed");
+        $this->recordActivity(isset($status) ? "uncompleted ":"completed ");
     }
     public function incomplete()
     {

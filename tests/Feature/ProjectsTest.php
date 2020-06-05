@@ -14,13 +14,12 @@ class ProjectsTest extends TestCase
     /** @test */
     public function guestCannotManageProject()
     {
-        $this->withoutExceptionHandling();
         $project=factory('App\Project')->create();
 
         $this->assertGuest();
-        // $this->get('/projects/create')->assertRedirect('/login');
-        // $this->post('/projects', $project->toArray())->assertRedirect('/login');
-        // $this->get($project->path())->assertRedirect('/login');
+        $this->get('/projects/create')->assertRedirect('/login');
+        $this->post('/projects', $project->toArray())->assertRedirect('/login');
+        $this->get($project->path())->assertRedirect('/login');
     }
     /** @test */
     public function unAuthCannotDelete()
@@ -78,6 +77,15 @@ class ProjectsTest extends TestCase
             ->get($project->path())
             ->assertSee($project->tittle)
             ->assertSee(\Illuminate\Support\Str::limit($project->description, 100));
+    }
+    /** @test */
+    public function canViewAllOfTheirProject()
+    {
+        $user=$this->signIn();
+        $project=ProjectFactory::create();
+        $project->invite($user);
+
+        $this->get('/projects')->assertSee($project->tittle);
     }
     /** @test */
     public function canUpdateTheirProject()
